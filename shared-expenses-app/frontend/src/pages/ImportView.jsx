@@ -70,7 +70,6 @@ const ImportView = () => {
   };
 
   const handleDownloadReport = () => {
-  const handleDownloadReport = () => {
     if (!result) return;
     
     let textContent = `Shared Expenses App - Import Report\n===================================\n\n`;
