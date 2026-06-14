@@ -69,6 +69,19 @@ const ImportView = () => {
     }
   };
 
+  const handleDownloadReport = () => {
+    if (!result) return;
+    const blob = new Blob([JSON.stringify(result, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'import_report.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="animate-fade-in">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -180,8 +193,10 @@ const ImportView = () => {
             </div>
           )}
           
-          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+          
+          <div style={{ marginTop: '2rem', textAlign: 'center', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
             <button className="btn btn-secondary" onClick={() => setResult(null)}>Upload Another File</button>
+            <button className="btn btn-primary" onClick={handleDownloadReport}>Download Anomaly Report</button>
           </div>
         </div>
       )}
