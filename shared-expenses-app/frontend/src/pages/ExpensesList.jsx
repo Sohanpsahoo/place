@@ -6,19 +6,28 @@ const API_URL = 'http://127.0.0.1:8000/api';
 
 const ExpensesList = () => {
   const [expenses, setExpenses] = useState([]);
+  const [users, setUsers] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchExpenses();
+    fetchData();
   }, []);
 
-  const fetchExpenses = async () => {
+  const fetchData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/expenses/1`);
-      setExpenses(response.data);
+      const [expensesRes, usersRes] = await Promise.all([
+        axios.get(`${API_URL}/expenses/1`),
+        axios.get(`${API_URL}/users`)
+      ]);
+      
+      const userMap = {};
+      usersRes.data.forEach(u => userMap[u.id] = u.name);
+      setUsers(userMap);
+      
+      setExpenses(expensesRes.data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching expenses", error);
+      console.error("Error fetching data", error);
       setLoading(false);
     }
   };
@@ -61,7 +70,7 @@ const ExpensesList = () => {
               <div style={{ fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                 Paid By
               </div>
-              <div style={{ marginBottom: '1rem' }}>User ID: {exp.paid_by_id}</div>
+              <div style={{ marginBottom: '1rem' }}>{users[exp.paid_by_id] || `User ID: ${exp.paid_by_id}`}</div>
 
               <div style={{ fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                 Split Breakdown
@@ -69,7 +78,7 @@ const ExpensesList = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.5rem' }}>
                 {exp.splits && exp.splits.map((split, idx) => (
                   <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: 'var(--surface)', borderRadius: '4px' }}>
-                    <span>User ID: {split.user_id}</span>
+                    <span>{users[split.user_id] || `User ID: ${split.user_id}`}</span>
                     <span style={{ fontWeight: '600' }}>₹{split.amount_owed.toFixed(2)}</span>
                   </div>
                 ))}
