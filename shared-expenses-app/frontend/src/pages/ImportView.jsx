@@ -1,0 +1,152 @@
+import React, { useState, useRef } from 'react';
+import axios from 'axios';
+import { Upload, AlertTriangle, CheckCircle, FileText } from 'lucide-react';
+
+const API_URL = 'http://127.0.0.1:8000/api';
+
+const ImportView = () => {
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post(`${API_URL}/import/1`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setResult(response.data);
+    } catch (error) {
+      console.error('Error uploading file', error);
+      alert('Failed to upload file.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="animate-fade-in">
+      <h2>Import Data</h2>
+      <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Meera's Requirement: "Clean up the duplicates — but I want to approve anything the app deletes or changes."</p>
+
+      {!result && (
+        <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
+          <div 
+            className="file-upload" 
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileChange} 
+              accept=".csv"
+            />
+            <Upload size={48} color="var(--primary)" style={{ marginBottom: '1rem' }} />
+            {file ? (
+              <div>
+                <h3>{file.name}</h3>
+                <p className="item-subtitle">Ready to upload</p>
+              </div>
+            ) : (
+              <div>
+                <h3>Select CSV File</h3>
+                <p className="item-subtitle">Click to browse for expenses_export.csv</p>
+              </div>
+            )}
+          </div>
+
+          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+            <button 
+              className="btn btn-primary" 
+              onClick={handleUpload} 
+              disabled={!file || uploading}
+              style={{ width: '100%' }}
+            >
+              {uploading ? 'Processing...' : 'Upload & Process'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {result && (
+        <div className="animate-fade-in">
+          <div className="card" style={{ marginBottom: '2rem', borderLeft: '4px solid var(--secondary)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <CheckCircle color="var(--secondary)" size={32} />
+              <div>
+                <h3 style={{ color: 'var(--secondary)' }}>{result.message}</h3>
+                <p className="item-subtitle">The file was successfully parsed and data imported.</p>
+              </div>
+            </div>
+          </div>
+
+          <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <AlertTriangle color="var(--warning)" size={24} />
+            Detected Anomalies
+          </h3>
+          
+          <div className="list-container">
+            {result.anomalies.map((anomaly, idx) => (
+              <div key={idx} className="list-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <span className="badge badge-warning">{anomaly.anomaly_type}</span>
+                    <span style={{ fontWeight: '600' }}>Row {anomaly.row_number}</span>
+                  </div>
+                  {!anomaly.user_approved && (
+                     <button className="btn btn-secondary" style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }}>Approve Resolution</button>
+                  )}
+                </div>
+                
+                <div style={{ width: '100%', padding: '1rem', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                  <p><strong>Issue:</strong> {anomaly.description}</p>
+                  <p style={{ marginTop: '0.5rem', color: 'var(--secondary)' }}><strong>Resolution Applied:</strong> {anomaly.resolution_applied}</p>
+                </div>
+              </div>
+            ))}
+            
+            {result.anomalies.length === 0 && (
+              <div className="card text-center" style={{ color: 'var(--text-muted)' }}>
+                No anomalies detected in the uploaded file.
+              </div>
+            )}
+          </div>
+
+          {result.report.length > 0 && (
+            <div style={{ marginTop: '3rem' }}>
+              <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <FileText size={24} />
+                Detailed Processing Log
+              </h3>
+              <div className="card" style={{ fontFamily: 'monospace', fontSize: '0.9rem', backgroundColor: '#000', color: '#0F0' }}>
+                {result.report.map((log, idx) => (
+                  <div key={idx}>{'>'} {log}</div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+            <button className="btn btn-secondary" onClick={() => setResult(null)}>Upload Another File</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ImportView;
