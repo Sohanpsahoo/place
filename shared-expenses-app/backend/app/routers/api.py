@@ -130,3 +130,12 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+
+@router.post("/anomalies/{anomaly_id}/approve")
+def approve_anomaly(anomaly_id: int, db: Session = Depends(get_db)):
+    anomaly = db.query(models.ImportAnomaly).filter(models.ImportAnomaly.id == anomaly_id).first()
+    if anomaly:
+        anomaly.user_approved = True
+        db.commit()
+        return {"status": "success", "message": "Anomaly approved"}
+    return {"status": "error", "message": "Anomaly not found"}

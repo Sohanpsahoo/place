@@ -8,6 +8,7 @@ const ImportView = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
+  const [animatingIds, setAnimatingIds] = useState(new Set());
   const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
@@ -45,9 +46,26 @@ const ImportView = () => {
         alert('Database cleared!');
         setResult(null);
         setFile(null);
+        setAnimatingIds(new Set());
       } catch (err) {
         alert('Failed to clear database');
       }
+    }
+  };
+
+  const handleApprove = async (anomalyId) => {
+    setAnimatingIds(prev => new Set(prev).add(anomalyId));
+    try {
+      await axios.post(`${API_URL}/anomalies/${anomalyId}/approve`);
+      // Remove it from the DOM after the 300ms animation finishes
+      setTimeout(() => {
+        setResult(prev => ({
+          ...prev,
+          anomalies: prev.anomalies.filter(a => a.id !== anomalyId)
+        }));
+      }, 300);
+    } catch (err) {
+      console.error('Failed to approve anomaly', err);
     }
   };
 
@@ -117,14 +135,20 @@ const ImportView = () => {
           
           <div className="list-container">
             {result.anomalies.map((anomaly, idx) => (
-              <div key={idx} className="list-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1rem' }}>
+              <div key={idx} className={`list-item ${animatingIds.has(anomaly.id) ? 'slide-out' : ''}`} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1rem', transition: 'all 0.3s ease-out' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                   <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <span className="badge badge-warning">{anomaly.anomaly_type}</span>
                     <span style={{ fontWeight: '600' }}>Row {anomaly.row_number}</span>
                   </div>
                   {!anomaly.user_approved && (
-                     <button className="btn btn-secondary" style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }}>Approve Resolution</button>
+                    <button 
+                      className="btn btn-secondary" 
+                      style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }}
+                      onClick={() => handleApprove(anomaly.id)}
+                    >
+                      Approve Resolution
+                    </button>
                   )}
                 </div>
                 
