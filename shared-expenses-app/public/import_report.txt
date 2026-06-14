@@ -1,0 +1,44 @@
+Shared Expenses App - Import Report
+===================================
+
+Status: Import processed successfully
+
+🚨 Detected Anomalies:
+----------------------
+Row 6 | Duplicate/Conflict
+Issue: Similar expense already exists: dinner - marina bites
+Resolution Applied: Skipped duplicate
+
+Row 13 | Missing Paid By
+Issue: Blank paid_by field
+Resolution Applied: Row skipped
+
+Row 15 | Percentage Mismatch
+Issue: Total % is 110.0
+Resolution Applied: Normalized to 100%
+
+Row 23 | Unregistered Guest
+Issue: Found Dev's friend Kabir
+Resolution Applied: Assigned guest share to payer
+
+Row 28 | Missing Currency
+Issue: Currency was blank
+Resolution Applied: Defaulted to INR
+
+Row 32 | Percentage Mismatch
+Issue: Total % is 110.0
+Resolution Applied: Normalized to 100%
+
+Row 36 | Moved Out Member
+Issue: Meera already moved out on 2026-04-02 00:00:00
+Resolution Applied: Removed from split
+
+Row 42 | Conflicting Split Type
+Issue: Type equal but shares provided
+Resolution Applied: Changed to share split
+
+📋 Detailed Processing Log:
+---------------------------
+> Row 6: Duplicate or Conflict detected. Kept the first one.
+> Row 13: Missing 'paid_by'. Skipping row.
+> Row 31: Zero amount expense ignored.
