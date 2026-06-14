@@ -84,11 +84,18 @@ const ImportView = () => {
 
   return (
     <div className="animate-fade-in">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Import Data</h2>
-        <button className="btn btn-danger" onClick={handleClear}>Reset Database</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h2 style={{ marginBottom: '0.5rem' }}>Import Data</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Meera's Requirement: "Clean up the duplicates — but I want to approve anything the app deletes or changes."</p>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end', marginTop: '0.5rem' }}>
+          <button className="btn btn-danger" onClick={handleClear}>Reset Database</button>
+          {result && (
+            <button className="btn btn-primary" onClick={handleDownloadReport} style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}>Download Anomaly Report</button>
+          )}
+        </div>
       </div>
-      <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Meera's Requirement: "Clean up the duplicates — but I want to approve anything the app deletes or changes."</p>
 
       {!result && (
         <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
@@ -193,10 +200,8 @@ const ImportView = () => {
             </div>
           )}
           
-          
-          <div style={{ marginTop: '2rem', textAlign: 'center', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
             <button className="btn btn-secondary" onClick={() => setResult(null)}>Upload Another File</button>
-            <button className="btn btn-primary" onClick={handleDownloadReport}>Download Anomaly Report</button>
           </div>
         </div>
       )}
