@@ -87,7 +87,7 @@ const ImportView = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h2 style={{ marginBottom: '0.5rem' }}>Import Data</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Meera's Requirement: "Clean up the duplicates — but I want to approve anything the app deletes or changes."</p>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>General Requirement: "Clean up the database for better result afterwards ."</p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end', marginTop: '0.5rem' }}>
           <button className="btn btn-danger" onClick={handleClear}>Reset Database</button>
@@ -99,14 +99,14 @@ const ImportView = () => {
 
       {!result && (
         <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <div 
-            className="file-upload" 
+          <div
+            className="file-upload"
             onClick={() => fileInputRef.current?.click()}
           >
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileChange} 
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
               accept=".csv"
             />
             <Upload size={48} color="var(--primary)" style={{ marginBottom: '1rem' }} />
@@ -124,9 +124,9 @@ const ImportView = () => {
           </div>
 
           <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-            <button 
-              className="btn btn-primary" 
-              onClick={handleUpload} 
+            <button
+              className="btn btn-primary"
+              onClick={handleUpload}
               disabled={!file || uploading}
               style={{ width: '100%' }}
             >
@@ -152,7 +152,7 @@ const ImportView = () => {
             <AlertTriangle color="var(--warning)" size={24} />
             Detected Anomalies
           </h3>
-          
+
           <div className="list-container">
             {result.anomalies.map((anomaly, idx) => (
               <div key={idx} className={`list-item ${animatingIds.has(anomaly.id) ? 'slide-out' : ''}`} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1rem', transition: 'all 0.3s ease-out' }}>
@@ -162,8 +162,8 @@ const ImportView = () => {
                     <span style={{ fontWeight: '600' }}>Row {anomaly.row_number}</span>
                   </div>
                   {!anomaly.user_approved && (
-                    <button 
-                      className="btn btn-secondary" 
+                    <button
+                      className="btn btn-secondary"
                       style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }}
                       onClick={() => handleApprove(anomaly.id)}
                     >
@@ -171,14 +171,14 @@ const ImportView = () => {
                     </button>
                   )}
                 </div>
-                
+
                 <div style={{ width: '100%', padding: '1rem', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
                   <p><strong>Issue:</strong> {anomaly.description}</p>
                   <p style={{ marginTop: '0.5rem', color: 'var(--secondary)' }}><strong>Resolution Applied:</strong> {anomaly.resolution_applied}</p>
                 </div>
               </div>
             ))}
-            
+
             {result.anomalies.length === 0 && (
               <div className="card text-center" style={{ color: 'var(--text-muted)' }}>
                 No anomalies detected in the uploaded file.
@@ -199,7 +199,7 @@ const ImportView = () => {
               </div>
             </div>
           )}
-          
+
           <div style={{ marginTop: '2rem', textAlign: 'center' }}>
             <button className="btn btn-secondary" onClick={() => setResult(null)}>Upload Another File</button>
           </div>
