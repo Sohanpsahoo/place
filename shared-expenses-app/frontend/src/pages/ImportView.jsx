@@ -70,12 +70,33 @@ const ImportView = () => {
   };
 
   const handleDownloadReport = () => {
+  const handleDownloadReport = () => {
     if (!result) return;
-    const blob = new Blob([JSON.stringify(result, null, 2)], { type: "application/json" });
+    
+    let textContent = `Shared Expenses App - Import Report\n===================================\n\n`;
+    textContent += `Status: ${result.message}\n\n`;
+    
+    textContent += `🚨 Detected Anomalies:\n----------------------\n`;
+    if (result.anomalies.length === 0) {
+      textContent += `No anomalies detected.\n\n`;
+    } else {
+      result.anomalies.forEach((a) => {
+        textContent += `Row ${a.row_number} | ${a.anomaly_type}\n`;
+        textContent += `Issue: ${a.description}\n`;
+        textContent += `Resolution Applied: ${a.resolution_applied}\n\n`;
+      });
+    }
+    
+    textContent += `📋 Detailed Processing Log:\n---------------------------\n`;
+    result.report.forEach(log => {
+      textContent += `> ${log}\n`;
+    });
+
+    const blob = new Blob([textContent], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'import_report.json';
+    a.download = 'import_report.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
