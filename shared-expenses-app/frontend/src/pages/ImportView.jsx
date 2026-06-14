@@ -38,9 +38,25 @@ const ImportView = () => {
     }
   };
 
+  const handleClear = async () => {
+    if (window.confirm('Are you sure you want to clear all data? This will let you test a fresh import.')) {
+      try {
+        await axios.delete('http://127.0.0.1:8000/api/clear');
+        alert('Database cleared!');
+        setResult(null);
+        setFile(null);
+      } catch (err) {
+        alert('Failed to clear database');
+      }
+    }
+  };
+
   return (
     <div className="animate-fade-in">
-      <h2>Import Data</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2>Import Data</h2>
+        <button className="btn btn-danger" onClick={handleClear}>Reset Database</button>
+      </div>
       <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Meera's Requirement: "Clean up the duplicates — but I want to approve anything the app deletes or changes."</p>
 
       {!result && (

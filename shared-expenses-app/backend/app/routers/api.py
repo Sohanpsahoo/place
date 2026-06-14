@@ -64,10 +64,69 @@ def get_balances(group_id: int, db: Session = Depends(get_db)):
         
     return balances
 
-@router.get("/expenses/{group_id}")
+@router.get("/expenses/{group_id}", response_model=List[schemas.Expense])
 def get_expenses(group_id: int, db: Session = Depends(get_db)):
     return db.query(models.Expense).filter(models.Expense.group_id == group_id).order_by(models.Expense.date.desc()).all()
+
+@router.post("/expenses")
+def create_expense(expense: schemas.ExpenseCreate, db: Session = Depends(get_db)):
+    # Create the expense
+    new_expense = models.Expense(
+        group_id=1, # Defaulting to 1 for hackathon scope if not provided
+        paid_by_id=expense.paid_by_id,
+        amount=expense.amount,
+        currency=expense.currency,
+        converted_amount_inr=expense.converted_amount_inr,
+        date=expense.date,
+        description=expense.description,
+        is_settlement=expense.is_settlement
+    )
+    db.add(new_expense)
+    db.commit()
+    db.refresh(new_expense)
+    
+    # Create the splits
+    for split in expense.splits:
+        new_split = models.ExpenseSplit(
+            expense_id=new_expense.id,
+            user_id=split.user_id,
+            amount_owed=split.amount_owed
+        )
+        db.add(new_split)
+    db.commit()
+    
+    return {"message": "Expense created successfully", "id": new_expense.id}
+
+@router.post("/settle")
+def create_settlement(payer_id: int, payee_id: int, amount: float, db: Session = Depends(get_db)):
+    import datetime
+    new_expense = models.Expense(
+        group_id=1,
+        paid_by_id=payer_id,
+        amount=amount,
+        currency="INR",
+        converted_amount_inr=amount,
+        date=datetime.datetime.utcnow(),
+        description=f"Settlement payment",
+        is_settlement=True
+    )
+    db.add(new_expense)
+    db.commit()
+    db.refresh(new_expense)
+    
+    # Target owes negative amount (reduces target debt)
+    db.add(models.ExpenseSplit(expense_id=new_expense.id, user_id=payee_id, amount_owed=amount))
+    db.commit()
+    return {"message": "Settlement recorded successfully"}
 
 @router.get("/users")
 def get_users(db: Session = Depends(get_db)):
     return db.query(models.User).all()
+
+@router.post("/users")
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    new_user = models.User(name=user.name, email=user.email, password_hash=user.password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
