@@ -9,7 +9,7 @@ import SettleView from './pages/SettleView';
 import { Wallet, UploadCloud, List as ListIcon, Plus, UserCheck } from 'lucide-react';
 import './index.css';
 
-const API_URL = 'http://127.0.0.1:8000/api';
+const API_URL = 'https://place-0v2o.onrender.com/api';
 
 function App() {
   const [users, setUsers] = useState([]);
