@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { Upload, AlertTriangle, CheckCircle, FileText } from 'lucide-react';
 
-const API_URL = 'https://place-0v2o.onrender.com/api';
+const API_URL = 'import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api"';
 
 const ImportView = () => {
   const [file, setFile] = useState(null);
@@ -42,7 +42,7 @@ const ImportView = () => {
   const handleClear = async () => {
     if (window.confirm('Are you sure you want to clear all data? This will let you test a fresh import.')) {
       try {
-        await axios.delete('https://place-0v2o.onrender.com/api/clear');
+        await axios.delete('import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api"/clear');
         alert('Database cleared!');
         setResult(null);
         setFile(null);
