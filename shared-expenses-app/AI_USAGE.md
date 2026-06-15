@@ -16,7 +16,7 @@ This project was developed with the assistance of the Gemini 3.1 Pro model via t
 During the setup process, the following challenges were encountered and resolved collaboratively:
 
 ### 1. Initial Attempt to use Node.js Commands for Python Backend
-**What happened**: The user initially tried to start the backend server using Node.js commands (`npm run dev`), assuming it was a JavaScript project, which resulted in a missing `package.json` error.
+**What happened**: I user initially tried to start the backend server using Node.js commands (`npm run dev`), assuming it was a JavaScript project, which resulted in a missing `package.json` error.
 **How it was caught**: The AI read the directory contents and `requirements.txt` using its file viewing tools.
 **What was changed**: The AI redirected the user to create a Python virtual environment (`python -m venv venv`) and use `pip` to install dependencies instead of `npm`.
 
